@@ -1,20 +1,25 @@
 import threading
-
+import time
 import cv2
+import os
 
 
 class CamThread(threading.Thread):
-    def __init__(self, previewName, camID):
+    def __init__(self, previewName, camID, save_dir):
         threading.Thread.__init__(self)
         self.previewName = previewName
         self.camID = camID
+        self.save_dir = save_dir
 
     def run(self):
         print("Starting " + self.previewName)
-        CamPreview(self.previewName, self.camID)
+        CamPreview(self.previewName, self.camID, self.save_dir)
 
 
-def CamPreview(previewName, camID):
+def CamPreview(previewName, camID, save_dir):
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
     cv2.namedWindow(previewName)
     cam = cv2.VideoCapture(camID)
     if cam.isOpened():  # try to get the first frame
@@ -22,9 +27,20 @@ def CamPreview(previewName, camID):
     else:
         rval = False
 
+    last_time = time.time()
+    capture_duration = 5
+
     while rval:
         cv2.imshow(previewName, frame)
         rval, frame = cam.read()
+
+        # capture frames
+        curr_time = time.time()
+        if curr_time - last_time >= capture_duration:
+            file_name = str(int(curr_time))
+            file_path = os.path.join(save_dir, file_name)
+            cv2.imwrite(file_path, frame)
+
         key = cv2.waitKey(20)
         if key == 27:  # exit on ESC
             break
@@ -33,7 +49,7 @@ def CamPreview(previewName, camID):
 
 if __name__ == '__main__':
     # Create two threads as follows
-    thread1 = CamThread("Camera 1", 1)
-    thread2 = CamThread("Camera 2", 2)
+    thread1 = CamThread("Camera 1", 0, './camera_0/')
+    # thread2 = CamThread("Camera 2", 2)
     thread1.start()
-    thread2.start()
+    # thread2.start()
