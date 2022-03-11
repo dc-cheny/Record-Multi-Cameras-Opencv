@@ -2,6 +2,8 @@ import threading
 import time
 import cv2
 import os
+from matplotlib import pyplot
+pyplot.switch_backend('Agg')
 
 
 class CamThread(threading.Thread):
@@ -37,9 +39,10 @@ def CamPreview(previewName, camID, save_dir):
         # capture frames
         curr_time = time.time()
         if curr_time - last_time >= capture_duration:
-            file_name = str(int(curr_time))
+            file_name = str(int(curr_time))+'.jpg'
             file_path = os.path.join(save_dir, file_name)
             cv2.imwrite(file_path, frame)
+            last_time = curr_time
 
         key = cv2.waitKey(20)
         if key == 27:  # exit on ESC
@@ -49,7 +52,8 @@ def CamPreview(previewName, camID, save_dir):
 
 if __name__ == '__main__':
     # Create two threads as follows
-    thread1 = CamThread("Camera 1", 0, './camera_0/')
+    # thread1 = CamThread("Camera 1", 0, './camera_0/')
     # thread2 = CamThread("Camera 2", 2)
-    thread1.start()
+    # thread1.start()
     # thread2.start()
+    CamPreview("Camera 1", 0, './camera_0/')
