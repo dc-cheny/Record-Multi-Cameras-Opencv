@@ -24,6 +24,8 @@ def CamPreview(previewName, camID, save_dir):
 
     cv2.namedWindow(previewName)
     cam = cv2.VideoCapture(camID)
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     if cam.isOpened():  # try to get the first frame
         rval, frame = cam.read()
     else:
@@ -56,4 +58,4 @@ if __name__ == '__main__':
     # thread2 = CamThread("Camera 2", 2)
     # thread1.start()
     # thread2.start()
-    CamPreview("Camera 1", 0, './camera_0/')
+    CamPreview("Camera 0", 0, './20220317/camera_0/')
