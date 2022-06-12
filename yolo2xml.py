@@ -18,7 +18,7 @@ def parse_cls(txt_path):
     else:
         with open(txt_path, 'r') as f:
             c = [x.strip('\n').strip() for x in f.readlines()]
-    return {_c: str(idx) for idx, _c in enumerate(c)}, {str(idx): c for idx, _c in enumerate(c)}
+    return {_c: str(idx) for idx, _c in enumerate(c)}, {str(idx): _c for idx, _c in enumerate(c)}
 
 
 def yolo2xml(yolo_ann_dir, xml_dir):
@@ -49,7 +49,11 @@ def yolo2xml(yolo_ann_dir, xml_dir):
             yolo_ann_contents = [x.strip('\n').strip() for x in f.readlines()]
         voc_writer = Writer(xml_filename, width, height)
         for yac in yolo_ann_contents:
-            label, [x, y, w, h] = idx2cls[yac[0]], list(map(float, yac[1:]))
+            yac = yac.split()
+            if yac[0] in ['10', '12']:
+                print(yaf)
+            label, bbox = idx2cls[yac[0]], list(map(float, yac[1:]))
+            x, y, w, h = bbox
             xmin = int(width*(2*x+w)/2)
             xmax = int(width*(2*x-w)/2)
             ymin = int(height*(2*y+h)/2)
@@ -88,7 +92,7 @@ def xml2yolo(yolo_ann_dir, xml_dir):
             yolo_ann_contents = [x.strip('\n').strip() for x in f.readlines()]
         voc_writer = Writer(xml_filename, width, height)
         for yac in yolo_ann_contents:
-            label, [x, y, w, h] = idx2cls[yac[0]], list(map(float, yac[1:]))
+            label, [x, y, w, h] = idx2cls[yac[0]], list(map(eval, yac[1:]))
             xmin = int(width*(2*x+w)/2)
             xmax = int(width*(2*x-w)/2)
             ymin = int(height*(2*y+h)/2)
@@ -100,8 +104,8 @@ def xml2yolo(yolo_ann_dir, xml_dir):
 
 
 if __name__ == '__main__':
-    yolo_ann_dir = ''
-    xml_dir = ''
+    yolo_ann_dir = '/home/xixiang/Record-Multi-Cameras-Opencv-main/20220317/20220315_sample_with_label_batch1_new'
+    xml_dir = '/home/xixiang/Record-Multi-Cameras-Opencv-main/20220317/20220315_sample_with_label_batch1_new_xml'
     yolo2xml(yolo_ann_dir, xml_dir)
 
 
